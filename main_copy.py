@@ -1,22 +1,21 @@
 import streamlit as st
 import os
 from langchain_groq import ChatGroq
-# Use this older, universal import style to avoid the red box
-from langchain.agents import AgentExecutor, create_openai_tools_agent
+from langchain.agents import AgentExecutor, create_openai_functions_agent
 from langchain import hub
 
-# 1. PAGE SETUP
+# --- PAGE SETUP ---
 st.set_page_config(page_title="Wortex AI Agent", page_icon="🤖")
 st.title("🤖 Wortex.ai Agent")
 
-# 2. KEY CHECK
+# --- KEY CHECK ---
 if "GROQ_API_KEY" in st.secrets:
     api_key = st.secrets["GROQ_API_KEY"]
 else:
-    st.error("❌ Secrets are missing! Go to Settings > Secrets.")
+    st.error("❌ GROQ_API_KEY is missing from Secrets!")
     st.stop()
 
-# 3. TOOL IMPORTS
+# --- TOOL IMPORTS ---
 try:
     from mytools.calculator import calculator
     from mytools.list_files import list_files
@@ -34,15 +33,15 @@ except Exception as e:
     st.error(f"⚠️ Tool Error: {e}")
     st.stop()
 
-# 4. INITIALIZE AGENT
+# --- INITIALIZE AGENT ---
 llm = ChatGroq(model="llama-3.3-70b-versatile", groq_api_key=api_key)
-prompt = hub.pull("hwchase17/openai-tools-agent")
+prompt = hub.pull("hwchase17/openai-functions-agent")
 
-# We use create_openai_tools_agent because it is more compatible
-agent = create_openai_tools_agent(llm, tools, prompt)
+# Using the most stable agent type for your version
+agent = create_openai_functions_agent(llm, tools, prompt)
 agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
 
-# 5. CHAT UI
+# --- CHAT UI ---
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
@@ -50,7 +49,7 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-if user_input := st.chat_input("Ask Wortex..."):
+if user_input := st.chat_input("How can Wortex help you?"):
     st.session_state.messages.append({"role": "user", "content": user_input})
     with st.chat_message("user"):
         st.markdown(user_input)
@@ -61,4 +60,4 @@ if user_input := st.chat_input("Ask Wortex..."):
             st.markdown(response["output"])
             st.session_state.messages.append({"role": "assistant", "content": response["output"]})
         except Exception as e:
-            st.error(f"Execution Error: {e}")
+            st.error(f"Agent Error: {e}")
