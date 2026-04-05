@@ -17,7 +17,7 @@ if not api_key:
     st.stop()
 
 # 3. Import Your Tools
-from mytools.calculator import calculator
+from mytools.calcuator import calculator
 from mytools.list_files import list_files
 from mytools.send_email import send_email
 from mytools.file_creation import create_file
