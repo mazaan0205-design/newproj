@@ -1,16 +1,22 @@
 import streamlit as st
 import os
 
-# --- 1. PAGE SETUP (Already working in image_1196a1.png) ---
+# --- 1. PAGE SETUP ---
 st.set_page_config(page_title="Wortex AI Agent", page_icon="🤖")
 st.title("🤖 Wortex.ai Agent")
 
-# --- 2. THE STABILIZED IMPORTS ---
+# --- 2. UNIVERSAL LOADER (Fixes the Red Box) ---
 try:
     from langchain_groq import ChatGroq
-    # This specific path works for Python 3.12 and modern LangChain
-    from langchain.agents import AgentExecutor, create_openai_functions_agent
     from langchain import hub
+    
+    # This tries the new way first, then the old way if it fails
+    try:
+        from langchain.agents import AgentExecutor, create_openai_functions_agent
+    except ImportError:
+        from langchain.agents.initialize import AgentExecutor
+        from langchain.agents.openai_functions_agent.base import create_openai_functions_agent
+
     st.success("✅ Wortex Engine Online")
 except Exception as e:
     st.error(f"❌ Core loading error: {e}")
@@ -29,10 +35,10 @@ try:
     from mytools.whatsapp import send_whatsapp_message
     tools = [calculator, send_whatsapp_message]
 except Exception as e:
-    st.warning(f"⚠️ Some tools skipped: {e}")
+    st.warning(f"⚠️ Tools partially loaded: {e}")
     tools = []
 
-# --- 5. INITIALIZE AGENT ---
+# --- 5. INITIALIZE ---
 llm = ChatGroq(model="llama-3.3-70b-versatile", groq_api_key=api_key)
 prompt = hub.pull("hwchase17/openai-functions-agent")
 agent = create_openai_functions_agent(llm, tools, prompt)
@@ -45,7 +51,7 @@ if "messages" not in st.session_state:
 for msg in st.session_state.messages:
     st.chat_message(msg["role"]).write(msg["content"])
 
-if user_input := st.chat_input("How can Wortex help you today?"):
+if user_input := st.chat_input("How can Wortex help?"):
     st.session_state.messages.append({"role": "user", "content": user_input})
     st.chat_message("user").write(user_input)
     
