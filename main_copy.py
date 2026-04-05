@@ -4,18 +4,18 @@ from langchain_groq import ChatGroq
 from langchain.agents import AgentExecutor, create_openai_functions_agent
 from langchain import hub
 
-# --- THE UI THAT WAS WORKING ---
+# 1. PAGE SETUP (This showed the 🤖 Wortex.ai Agent title)
 st.set_page_config(page_title="Wortex AI Agent", page_icon="🤖")
 st.title("🤖 Wortex.ai Agent")
 
-# --- SECRETS CHECK ---
+# 2. KEY CHECK
 if "GROQ_API_KEY" in st.secrets:
     api_key = st.secrets["GROQ_API_KEY"]
 else:
-    st.error("❌ Missing GROQ_API_KEY in Secrets!")
+    st.error("❌ GROQ_API_KEY is missing from Streamlit Secrets!")
     st.stop()
 
-# --- TOOL IMPORTS ---
+# 3. TOOL IMPORTS
 try:
     from mytools.calculator import calculator
     from mytools.list_files import list_files
@@ -33,15 +33,15 @@ except Exception as e:
     st.error(f"⚠️ Tool Error: {e}")
     st.stop()
 
-# --- THE AGENT BRAIN ---
+# 4. INITIALIZE THE BRAIN
 llm = ChatGroq(model="llama-3.3-70b-versatile", groq_api_key=api_key)
 prompt = hub.pull("hwchase17/openai-functions-agent")
 
-# This specific line is the one that worked in Python 3.12
+# Use create_openai_functions_agent (The one that worked before)
 agent = create_openai_functions_agent(llm, tools, prompt)
 agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
 
-# --- CHAT INTERFACE ---
+# 5. CHAT UI
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
@@ -60,4 +60,4 @@ if user_input := st.chat_input("Ask Wortex..."):
             st.markdown(response["output"])
             st.session_state.messages.append({"role": "assistant", "content": response["output"]})
         except Exception as e:
-            st.error(f"Logic Error: {e}")
+            st.error(f"Agent Logic Error: {e}")
