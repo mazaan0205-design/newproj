@@ -1,8 +1,8 @@
 streamlit
-langchain
 langchain-groq
 langchain-community
 langchainhub
 twilio
 pandas
-openpyx1
+openpyxl
+python-dotenv
