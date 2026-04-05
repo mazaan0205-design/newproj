@@ -1,23 +1,22 @@
 import streamlit as st
 import os
 from langchain_groq import ChatGroq
-from langchain.agents import AgentExecutor, create_tool_calling_agent
+# Use this older, universal import style to avoid the red box
+from langchain.agents import AgentExecutor, create_openai_tools_agent
 from langchain import hub
 
 # 1. PAGE SETUP
 st.set_page_config(page_title="Wortex AI Agent", page_icon="🤖")
 st.title("🤖 Wortex.ai Agent")
 
-# 2. THE KEY CHECK
-# This ensures the app doesn't crash if your Secrets are missing
+# 2. KEY CHECK
 if "GROQ_API_KEY" in st.secrets:
     api_key = st.secrets["GROQ_API_KEY"]
 else:
-    st.error("❌ GROQ_API_KEY is missing from Streamlit Secrets!")
+    st.error("❌ Secrets are missing! Go to Settings > Secrets.")
     st.stop()
 
-# 3. IMPORT YOUR TOOLS
-# We use a try-except block so you can see exactly which tool file has a mistake
+# 3. TOOL IMPORTS
 try:
     from mytools.calculator import calculator
     from mytools.list_files import list_files
@@ -33,51 +32,33 @@ try:
     ]
 except Exception as e:
     st.error(f"⚠️ Tool Error: {e}")
-    st.info("Check the 'mytools' folder on GitHub for typos in your filenames.")
     st.stop()
 
-# 4. INITIALIZE THE BRAIN (LLM)
-llm = ChatGroq(
-    model="llama-3.3-70b-versatile", 
-    temperature=0, 
-    groq_api_key=api_key
-)
+# 4. INITIALIZE AGENT
+llm = ChatGroq(model="llama-3.3-70b-versatile", groq_api_key=api_key)
+prompt = hub.pull("hwchase17/openai-tools-agent")
 
-# 5. INITIALIZE THE AGENT
-# Pull the modern 'tools-agent' prompt from LangChain Hub
-try:
-    prompt = hub.pull("hwchase17/openai-tools-agent")
-    agent = create_tool_calling_agent(llm, tools, prompt)
-    agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
-    st.success("✅ Wortex Engine Online (Python 3.12)")
-except Exception as e:
-    st.error(f"❌ Agent Setup Error: {e}")
-    st.stop()
+# We use create_openai_tools_agent because it is more compatible
+agent = create_openai_tools_agent(llm, tools, prompt)
+agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
 
-# 6. CHAT HISTORY (MEMORY)
+# 5. CHAT UI
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# Display previous messages
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# 7. USER INPUT & EXECUTION
-if user_input := st.chat_input("How can Wortex help you today?"):
-    # Add user message to history
+if user_input := st.chat_input("Ask Wortex..."):
     st.session_state.messages.append({"role": "user", "content": user_input})
     with st.chat_message("user"):
         st.markdown(user_input)
 
-    # Generate response using the Agent
     with st.chat_message("assistant"):
-        with st.spinner("Wortex is thinking..."):
-            try:
-                # The agent decides which tool to use and gives the answer
-                response = agent_executor.invoke({"input": user_input})
-                final_answer = response["output"]
-                st.markdown(final_answer)
-                st.session_state.messages.append({"role": "assistant", "content": final_answer})
-            except Exception as e:
-                st.error(f"Agent Execution Error: {e}")
+        try:
+            response = agent_executor.invoke({"input": user_input})
+            st.markdown(response["output"])
+            st.session_state.messages.append({"role": "assistant", "content": response["output"]})
+        except Exception as e:
+            st.error(f"Execution Error: {e}")
