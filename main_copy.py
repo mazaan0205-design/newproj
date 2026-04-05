@@ -1,27 +1,26 @@
 import streamlit as st
 import os
 
-# --- 1. PAGE SETUP (The part that works!) ---
+# --- 1. PAGE SETUP ---
 st.set_page_config(page_title="Wortex AI Agent", page_icon="🤖")
 st.title("🤖 Wortex.ai Agent")
 
 # --- 2. THE STABILIZED IMPORTS ---
 try:
     from langchain_groq import ChatGroq
-    # New universal import path to fix the error in image 112d83.png
+    # This is the modern path that prevents the error in image_1192e0.png
     from langchain.agents import AgentExecutor, create_openai_functions_agent
     from langchain import hub
-    st.success("✅ Wortex Engine Loaded")
+    st.success("✅ Wortex Engine Loaded Successfully")
 except Exception as e:
     st.error(f"❌ Core loading error: {e}")
-    st.info("Try updating requirements.txt to: langchain>=0.1.0")
     st.stop()
 
 # --- 3. KEY CHECK ---
 if "GROQ_API_KEY" in st.secrets:
     api_key = st.secrets["GROQ_API_KEY"]
 else:
-    st.error("❌ Missing GROQ_API_KEY in Secrets!")
+    st.error("❌ GROQ_API_KEY is missing from Secrets!")
     st.stop()
 
 # --- 4. TOOL IMPORTS ---
@@ -30,23 +29,23 @@ try:
     from mytools.whatsapp import send_whatsapp_message
     tools = [calculator, send_whatsapp_message]
 except Exception as e:
-    st.warning(f"⚠️ Tools partially loaded: {e}")
+    st.warning(f"⚠️ Some tools skipped: {e}")
     tools = []
 
-# --- 5. INITIALIZE ---
+# --- 5. AGENT INITIALIZATION ---
 llm = ChatGroq(model="llama-3.3-70b-versatile", groq_api_key=api_key)
 prompt = hub.pull("hwchase17/openai-functions-agent")
 agent = create_openai_functions_agent(llm, tools, prompt)
 agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
 
-# --- 6. UI ---
+# --- 6. CHAT UI ---
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
 for msg in st.session_state.messages:
     st.chat_message(msg["role"]).write(msg["content"])
 
-if user_input := st.chat_input("Ask Wortex..."):
+if user_input := st.chat_input("How can Wortex help?"):
     st.session_state.messages.append({"role": "user", "content": user_input})
     st.chat_message("user").write(user_input)
     
