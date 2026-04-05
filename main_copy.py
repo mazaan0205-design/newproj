@@ -4,18 +4,18 @@ from langchain_groq import ChatGroq
 from langchain.agents import AgentExecutor, create_openai_functions_agent
 from langchain import hub
 
-# 1. PAGE SETUP (The part that was visible in image_102a65.png)
+# --- PAGE SETUP (Visible in image_102a65.png) ---
 st.set_page_config(page_title="Wortex AI Agent", page_icon="🤖")
 st.title("🤖 Wortex.ai Agent")
 
-# 2. KEY CHECK
+# --- KEY CHECK ---
 if "GROQ_API_KEY" in st.secrets:
     api_key = st.secrets["GROQ_API_KEY"]
 else:
-    st.error("❌ GROQ_API_KEY missing from Streamlit Secrets!")
+    st.error("❌ GROQ_API_KEY is missing from Secrets!")
     st.stop()
 
-# 3. TOOL IMPORTS (The "Safety" block)
+# --- TOOL IMPORTS ---
 try:
     from mytools.calculator import calculator
     from mytools.list_files import list_files
@@ -30,18 +30,18 @@ try:
         profit_loss_excel_tool, read_file, send_whatsapp_message
     ]
 except Exception as e:
-    st.error(f"⚠️ Tool Import Error: {e}")
+    st.error(f"⚠️ Tool Error: {e}")
     st.stop()
 
-# 4. AGENT SETUP (The version that loaded the title)
+# --- INITIALIZE AGENT ---
 llm = ChatGroq(model="llama-3.3-70b-versatile", groq_api_key=api_key)
 prompt = hub.pull("hwchase17/openai-functions-agent")
 
-# We use create_openai_functions_agent here
+# Use the stable function agent
 agent = create_openai_functions_agent(llm, tools, prompt)
 agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
 
-# 5. CHAT INTERFACE
+# --- CHAT UI ---
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
@@ -49,7 +49,7 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-if user_input := st.chat_input("Ask Wortex..."):
+if user_input := st.chat_input("How can Wortex help?"):
     st.session_state.messages.append({"role": "user", "content": user_input})
     with st.chat_message("user"):
         st.markdown(user_input)
