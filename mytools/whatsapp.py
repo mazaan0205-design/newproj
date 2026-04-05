@@ -1,23 +1,20 @@
-import pywhatkit
-from langchain_core.tools import tool
-from datetime import datetime
+from twilio.rest import Client
+import os
+from langchain.tools import tool
 
-# 1. Define the WhatsApp Tool
 @tool
-def send_whatsapp_message(phone_number: str, message: str):
-    """
-    Sends a WhatsApp message immediately using pywhatkit.
-    phone_number must include country code (e.g., '+923218417000
-    ').
-    """
-    try:
-        # send_instant_message sends it immediately
-        # Note: This will open a browser tab and require you to be logged into WhatsApp Web
-        pywhatkit.sendwhatmsg_instantly(phone_number, message, wait_time=60, tab_close=True)
-        return f"WhatsApp message sent successfully to {phone_number}"
-    except Exception as e:
-        return f"Error sending WhatsApp message: {str(e)}"
+def send_whatsapp_message(to_number: str, message_body: str):
+    """Sends a WhatsApp message using the Twilio API."""
+    account_sid = os.getenv('TWILIO_ACCOUNT_SID')
+    auth_token = os.getenv('TWILIO_AUTH_TOKEN')
+    client = Client(account_sid, auth_token)
 
+    message = client.messages.create(
+        from_=os.getenv('TWILIO_WHATSAPP_NUMBER'), # Example: 'whatsapp:+14155238886'
+        body=message_body,
+        to=f'whatsapp:{to_number}'
+    )
+    return f"Message sent! ID: {message.sid}"
 
 # send_whatsapp_message("+923134549651","Hi this is a sample text message") 
 # send_whatsapp_message("+923218417000","Hi this is a sample text message") 
