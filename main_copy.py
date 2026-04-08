@@ -1,12 +1,12 @@
 import streamlit as st
 import os
-from mytools import send_mail as send_email
-from mytools import send_whatsapp as send_whatsapp_message
-from mytools import read_file
-from mytools import list_files
-from mytools import make_file as create_file
-from mytools import make_excel_sheet as profit_loss_excel_tool
-# Note: I don't see 'calculator' in your mytools.py screenshot, 
+from mytools.send_email import send_email
+from mytools.whatsapp import send_whatsapp
+from mytools.read_file import read_file
+from mytools.list_files import list_files
+from mytools.file_creation import create_file
+from mytools.profit_loss_tool import profit_loss_excel_tool
+from mytools.calcuator import calculator
 # so make sure it's defined there!
 # --- 1. PAGE SETUP ---
 st.set_page_config(page_title="Wortex AI Agent", page_icon="🤖")
