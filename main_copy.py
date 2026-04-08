@@ -6,11 +6,12 @@ st.set_page_config(page_title="Wortex AI Agent", page_icon="🤖")
 st.title("🤖 Wortex.ai Agent")
 
 # --- THE ULTIMATE STABLE IMPORTS ---
+# --- THE ULTIMATE STABLE IMPORTS ---
 try:
     from langchain_groq import ChatGroq
     import langchainhub as hub
     
-    # We use these absolute paths to stop the 'cannot import' errors
+    # Absolute paths to stop the 'cannot import' errors
     from langchain.agents.agent import AgentExecutor
     from langchain.agents.openai_functions_agent.base import create_openai_functions_agent
     
@@ -23,12 +24,6 @@ except Exception as e:
     except Exception as inner_e:
         st.error(f"❌ Core loading error: {inner_e}")
         st.stop()
-    
-    st.success("✅ Wortex Engine Online")
-except Exception as e:
-    st.error(f"❌ Core loading error: {e}")
-    st.stop()
-
 # --- THE REST OF YOUR LOGIC ---
 if "GROQ_API_KEY" in st.secrets:
     api_key = st.secrets["GROQ_API_KEY"]
