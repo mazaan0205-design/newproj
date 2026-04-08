@@ -45,30 +45,31 @@ agent = create_openai_functions_agent(llm, tools, prompt)
 agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
 
 # --- 4. CHAT INTERFACE ---
-# --- 4. CHAT INTERFACE (STARTING FROM LINE 48) ---
+# --- 4. CHAT INTERFACE ---
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# Display previous conversation history
+# Display previous conversation
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# Process new user input
+# Handle User Input
 if user_input := st.chat_input("Ask Wortex..."):
-    # Add user message to history
     st.session_state.messages.append({"role": "user", "content": user_input})
     with st.chat_message("user"):
         st.markdown(user_input)
 
-    # Generate and display assistant response
+    # Agent Response Logic
     with st.chat_message("assistant"):
-        # The agent_executor.invoke is what actually "thinks" and uses tools
-        response = agent_executor.invoke({"input": user_input})
-        
-        # We extract the 'output' string to show it on screen
-        final_answer = response["output"]
-        st.markdown(final_answer)
-        
-    # Save the assistant response to history
-    st.session_state.messages.append({"role": "assistant", "content": final_answer})
+        try:
+            # We use st.spinner so you know it's working and not just "blank"
+            with st.spinner("Wortex is thinking..."):
+                response = agent_executor.invoke({"input": user_input})
+                final_answer = response["output"]
+                st.markdown(final_answer)
+                st.session_state.messages.append({"role": "assistant", "content": final_answer})
+        except Exception as e:
+            error_msg = f"❌ Agent Error: {str(e)}"
+            st.error(error_msg)
+            st.session_state.messages.append({"role": "assistant", "content": error_msg})# --- 4. CHAT INTERFACE (STARTING FROM LINE 48) ---
