@@ -30,21 +30,21 @@ else:
     st.stop()
 
 llm = ChatGroq(model="llama-3.3-70b-versatile", groq_api_key=api_key)
-prompt = hub.pull("hwchase17/openai-functions-agent")
+
 tools = [
-    send_email, 
-    send_whatsapp_message, 
-    read_file, 
-    list_files, 
-    create_file, 
+    send_email,
+    send_whatsapp_message,
+    read_file,
+    list_files,
+    create_file,
     profit_loss_excel_tool,
     calculator
-]# Start empty for stable video demo
+]
 
 # Use the tool-calling specific prompt
 prompt = hub.pull("hwchase17/openai-tools-agent")
 
-# Create the specific Tool Calling Agent for better Llama performance
+# Create the specific Tool Calling Agent
 agent = create_tool_calling_agent(llm, tools, prompt)
 
 # Create the executor with error handling
