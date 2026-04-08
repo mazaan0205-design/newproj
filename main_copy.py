@@ -5,9 +5,10 @@ import os
 st.set_page_config(page_title="Wortex AI Agent", page_icon="🤖")
 st.title("🤖 Wortex.ai Agent")
 # --- 2. THE STABLE LOADER ---
+# --- 2. THE STABLE LOADER ---
 try:
     from langchain_groq import ChatGroq
- from langchain import hub
+    from langchain import hub
     from langchain.agents import AgentExecutor, create_openai_functions_agent
     
     st.success("✅ Wortex Engine Online")
