@@ -33,7 +33,7 @@ llm = ChatGroq(model="llama-3.3-70b-versatile", groq_api_key=api_key)
 prompt = hub.pull("hwchase17/openai-functions-agent")
 tools = [
     send_email, 
-    send_whatsapp, 
+    send_whatsapp_message, 
     read_file, 
     list_files, 
     create_file, 
