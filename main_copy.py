@@ -7,7 +7,7 @@ st.title("🤖 Wortex.ai Agent")
 # --- 2. THE STABLE LOADER ---
 try:
     from langchain_groq import ChatGroq
-    import langchainhub as hub
+ from langchain import hub
     from langchain.agents import AgentExecutor, create_openai_functions_agent
     
     st.success("✅ Wortex Engine Online")
