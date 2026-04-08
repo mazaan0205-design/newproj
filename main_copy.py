@@ -32,7 +32,15 @@ else:
 
 llm = ChatGroq(model="llama-3.3-70b-versatile", groq_api_key=api_key)
 prompt = hub.pull("hwchase17/openai-functions-agent")
-tools = [] # Start empty for stable video demo
+tools = [
+    send_email, 
+    send_whatsapp, 
+    read_file, 
+    list_files, 
+    create_file, 
+    profit_loss_excel_tool,
+    calculator
+]# Start empty for stable video demo
 
 agent = create_openai_functions_agent(llm, tools, prompt)
 agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
