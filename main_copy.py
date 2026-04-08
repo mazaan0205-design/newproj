@@ -5,14 +5,24 @@ import os
 st.set_page_config(page_title="Wortex AI Agent", page_icon="🤖")
 st.title("🤖 Wortex.ai Agent")
 
-# --- THE FIX FOR 'NO ATTRIBUTE' ERROR ---
+# --- THE ULTIMATE STABLE IMPORTS ---
 try:
     from langchain_groq import ChatGroq
     import langchainhub as hub
     
-    # We use these specific paths to bypass the error in image_ea2623.png
-    from langchain.agents import AgentExecutor
-    from langchain.agents import create_openai_functions_agent
+    # We use these absolute paths to stop the 'cannot import' errors
+    from langchain.agents.agent import AgentExecutor
+    from langchain.agents.openai_functions_agent.base import create_openai_functions_agent
+    
+    st.success("✅ Wortex Engine Online")
+except Exception as e:
+    # If the paths above fail, this is the backup modern path
+    try:
+        from langchain.agents import AgentExecutor, create_openai_functions_agent
+        st.success("✅ Wortex Engine Online (Modern Path)")
+    except Exception as inner_e:
+        st.error(f"❌ Core loading error: {inner_e}")
+        st.stop()
     
     st.success("✅ Wortex Engine Online")
 except Exception as e:
