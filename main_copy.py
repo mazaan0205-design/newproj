@@ -10,7 +10,7 @@ try:
     from langchain_groq import ChatGroq
     from langchain import hub
     from langchain.agents import AgentExecutor, create_openai_functions_agent
-    
+    from mytools import send_mail, send_whatsapp, read_file, list_files, make_file, make_excel_sheet, get_files_content
     st.success("✅ Wortex Engine Online")
 except Exception as e:
     st.error(f"❌ Connection Error: {e}")
