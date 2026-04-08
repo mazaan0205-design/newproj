@@ -41,9 +41,16 @@ tools = [
     calculator
 ]# Start empty for stable video demo
 
-agent = create_openai_functions_agent(llm, tools, prompt)
-agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
 
+# Updated Agent and Executor with Parsing Error Handling
+agent = create_openai_functions_agent(llm, tools, prompt)
+
+agent_executor = AgentExecutor(
+    agent=agent, 
+    tools=tools, 
+    verbose=True, 
+    handle_parsing_errors=True
+)
 # --- 4. CHAT INTERFACE ---
 # --- 4. CHAT INTERFACE ---
 if "messages" not in st.session_state:
