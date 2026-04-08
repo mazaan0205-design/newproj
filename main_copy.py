@@ -4,18 +4,11 @@ import os
 # --- 1. PAGE SETUP ---
 st.set_page_config(page_title="Wortex AI Agent", page_icon="🤖")
 st.title("🤖 Wortex.ai Agent")
-
-# --- THE EMERGENCY STABLE LOADER ---
+# --- 2. THE STABLE LOADER ---
 try:
     from langchain_groq import ChatGroq
     import langchainhub as hub
-    
-    # We load from the base 'agent' file directly to avoid the init.py error
-    import langchain.agents.agent as agent_base
-    import langchain.agents.openai_functions_agent.base as func_agent_base
-    
-    AgentExecutor = agent_base.AgentExecutor
-    create_openai_functions_agent = func_agent_base.create_openai_functions_agent
+    from langchain.agents import AgentExecutor, create_openai_functions_agent
     
     st.success("✅ Wortex Engine Online")
 except Exception as e:
