@@ -42,14 +42,16 @@ tools = [
 ]# Start empty for stable video demo
 
 
-# Updated Agent and Executor with Parsing Error Handling
+# Updated Agent and Executor with Parsing Error Handlin# Create the agent
 agent = create_openai_functions_agent(llm, tools, prompt)
 
+# Create the executor with FORCE execution
 agent_executor = AgentExecutor(
     agent=agent, 
     tools=tools, 
     verbose=True, 
-    handle_parsing_errors=True
+    handle_parsing_errors=True,
+    max_iterations=5  # Gives the agent more "time" to try and use the tool
 )
 # --- 4. CHAT INTERFACE ---
 # --- 4. CHAT INTERFACE ---
