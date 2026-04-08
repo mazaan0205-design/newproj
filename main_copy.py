@@ -1,30 +1,26 @@
 import streamlit as st
 import os
 
-# --- PAGE SETUP ---
+# --- 1. PAGE SETUP ---
 st.set_page_config(page_title="Wortex AI Agent", page_icon="🤖")
 st.title("🤖 Wortex.ai Agent")
 
-# --- THE ULTIMATE STABLE IMPORTS ---
-# --- THE ULTIMATE STABLE IMPORTS ---
+# --- 2. THE ULTIMATE STABLE IMPORTS ---
 try:
     from langchain_groq import ChatGroq
     import langchainhub as hub
-    
-    # Absolute paths to stop the 'cannot import' errors
     from langchain.agents.agent import AgentExecutor
     from langchain.agents.openai_functions_agent.base import create_openai_functions_agent
-    
     st.success("✅ Wortex Engine Online")
-except Exception as e:
-    # If the paths above fail, this is the backup modern path
+except Exception:
     try:
         from langchain.agents import AgentExecutor, create_openai_functions_agent
         st.success("✅ Wortex Engine Online (Modern Path)")
-    except Exception as inner_e:
-        st.error(f"❌ Core loading error: {inner_e}")
+    except Exception as e:
+        st.error(f"❌ Core loading error: {e}")
         st.stop()
-# --- THE REST OF YOUR LOGIC ---
+
+# --- 3. LOGIC SETUP ---
 if "GROQ_API_KEY" in st.secrets:
     api_key = st.secrets["GROQ_API_KEY"]
 else:
@@ -33,11 +29,25 @@ else:
 
 llm = ChatGroq(model="llama-3.3-70b-versatile", groq_api_key=api_key)
 prompt = hub.pull("hwchase17/openai-functions-agent")
-
-# Starting with no tools to ensure the UI loads first
-tools = [] 
+tools = [] # Start empty for stable video demo
 
 agent = create_openai_functions_agent(llm, tools, prompt)
 agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
 
-# ... (Insert your Chat UI code here)
+# --- 4. CHAT INTERFACE ---
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
+
+if user_input := st.chat_input("Ask Wortex..."):
+    st.session_state.messages.append({"role": "user", "content": user_input})
+    with st.chat_message("user"):
+        st.markdown(user_input)
+
+    with st.chat_message("assistant"):
+        response = agent_executor.invoke({"input": user_input})
+        st.markdown(response["output"])
+        st.session_state.messages.append({"role": "assistant", "content": response["output"]})
