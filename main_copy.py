@@ -15,8 +15,7 @@ st.title("🤖 Wortex.ai Agent")
 try:
     from langchain_groq import ChatGroq
     from langchain import hub
-    from langchain.agents import AgentExecutor, create_openai_functions_agent
-  
+   from langchain.agents import AgentExecutor, create_tool_calling_agent
     st.success("✅ Wortex Engine Online")
 except Exception as e:
     st.error(f"❌ Connection Error: {e}")
