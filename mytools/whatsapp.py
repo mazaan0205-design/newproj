@@ -1,17 +1,17 @@
 from twilio.rest import Client
-import os
+import streamlit as st
 from langchain.tools import tool
 
 @tool
 def send_whatsapp_message(to_number: str, message_body: str):
     """Sends a WhatsApp message via Twilio API."""
     try:
-        account_sid = os.getenv('TWILIO_ACCOUNT_SID')
-        auth_token = os.getenv('TWILIO_AUTH_TOKEN')
+        account_sid = st.secrets['TWILIO_ACCOUNT_SID']
+        auth_token = st.secrets['TWILIO_AUTH_TOKEN']
         client = Client(account_sid, auth_token)
 
         message = client.messages.create(
-            from_=os.getenv('TWILIO_WHATSAPP_NUMBER'),
+            from_=st.secrets['TWILIO_WHATSAPP_NUMBER'],
             body=message_body,
             to=f'whatsapp:{to_number}'
         )
