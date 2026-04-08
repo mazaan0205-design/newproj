@@ -1,11 +1,12 @@
+import os
 from langchain.tools import tool
 
 @tool
-def calculator(expression: str):
-    """Evaluates mathematical expressions (e.g., '2 + 2' or '50 * 10')."""
+def create_file(filename: str, content: str):
+    """Creates a new file with the specified content."""
     try:
-        # Using eval safely for basic math
-        result = eval(expression, {"__builtins__": None}, {})
-        return f"📊 Result: {result}"
+        with open(filename, 'w') as f:
+            f.write(content)
+        return f"✅ File '{filename}' created successfully."
     except Exception as e:
-        return f"❌ Calculation Error: {str(e)}"
+        return f"❌ File Creation Error: {str(e)}"
