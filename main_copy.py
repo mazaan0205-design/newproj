@@ -14,8 +14,8 @@ st.title("🤖 Wortex.ai Agent")
 # --- 2. THE STABLE LOADER ---
 try:
     from langchain_groq import ChatGroq
-    from langchain import hub
-   from langchain.agents import AgentExecutor, create_tool_calling_agent
+from langchain import hub
+from langchain.agents import AgentExecutor, create_tool_calling_agent
     st.success("✅ Wortex Engine Online")
 except Exception as e:
     st.error(f"❌ Connection Error: {e}")
