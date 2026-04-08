@@ -40,17 +40,19 @@ tools = [
     calculator
 ]# Start empty for stable video demo
 
+# Use the tool-calling specific prompt
+prompt = hub.pull("hwchase17/openai-tools-agent")
 
-# Updated Agent and Executor with Parsing Error Handlin# Create the agent
-agent = create_openai_functions_agent(llm, tools, prompt)
+# Create the specific Tool Calling Agent for better Llama performance
+agent = create_tool_calling_agent(llm, tools, prompt)
 
-# Create the executor with FORCE execution
+# Create the executor with error handling
 agent_executor = AgentExecutor(
     agent=agent, 
     tools=tools, 
     verbose=True, 
     handle_parsing_errors=True,
-    max_iterations=5  # Gives the agent more "time" to try and use the tool
+    max_iterations=10
 )
 # --- 4. CHAT INTERFACE ---
 # --- 4. CHAT INTERFACE ---
