@@ -45,19 +45,30 @@ agent = create_openai_functions_agent(llm, tools, prompt)
 agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
 
 # --- 4. CHAT INTERFACE ---
+# --- 4. CHAT INTERFACE (STARTING FROM LINE 48) ---
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
+# Display previous conversation history
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
+# Process new user input
 if user_input := st.chat_input("Ask Wortex..."):
+    # Add user message to history
     st.session_state.messages.append({"role": "user", "content": user_input})
     with st.chat_message("user"):
         st.markdown(user_input)
 
+    # Generate and display assistant response
     with st.chat_message("assistant"):
+        # The agent_executor.invoke is what actually "thinks" and uses tools
         response = agent_executor.invoke({"input": user_input})
-        st.markdown(response["output"])
-        st.session_state.messages.append({"role": "assistant", "content": response["output"]})
+        
+        # We extract the 'output' string to show it on screen
+        final_answer = response["output"]
+        st.markdown(final_answer)
+        
+    # Save the assistant response to history
+    st.session_state.messages.append({"role": "assistant", "content": final_answer})
