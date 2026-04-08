@@ -5,20 +5,22 @@ import os
 st.set_page_config(page_title="Wortex AI Agent", page_icon="🤖")
 st.title("🤖 Wortex.ai Agent")
 
-# --- 2. THE ULTIMATE STABLE IMPORTS ---
+# --- THE EMERGENCY STABLE LOADER ---
 try:
     from langchain_groq import ChatGroq
     import langchainhub as hub
-    from langchain.agents.agent import AgentExecutor
-    from langchain.agents.openai_functions_agent.base import create_openai_functions_agent
+    
+    # We load from the base 'agent' file directly to avoid the init.py error
+    import langchain.agents.agent as agent_base
+    import langchain.agents.openai_functions_agent.base as func_agent_base
+    
+    AgentExecutor = agent_base.AgentExecutor
+    create_openai_functions_agent = func_agent_base.create_openai_functions_agent
+    
     st.success("✅ Wortex Engine Online")
-except Exception:
-    try:
-        from langchain.agents import AgentExecutor, create_openai_functions_agent
-        st.success("✅ Wortex Engine Online (Modern Path)")
-    except Exception as e:
-        st.error(f"❌ Core loading error: {e}")
-        st.stop()
+except Exception as e:
+    st.error(f"❌ Connection Error: {e}")
+    st.stop()
 
 # --- 3. LOGIC SETUP ---
 if "GROQ_API_KEY" in st.secrets:
